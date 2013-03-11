@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 (ns clak.core
   (:refer-clojure :exclude [keys])
   (:require [clj-http.client :as http]
@@ -120,3 +121,16 @@
 
 
 ;;; Map/reduce operations
+=======
+(ns clak.core)
+
+(declare ^:dynamic *riak-url*)
+
+(defn bucket-url
+  [bucket]
+  (str *riak-url* "/buckets/" (name bucket)))
+
+(defn key-url
+  [bucket key]
+  (str (bucket-url (name bucket)) "/keys/" (name key)))
+>>>>>>> Initial import
