@@ -1,10 +1,6 @@
 # clak
 
-<<<<<<< HEAD
-Simple Riak Rest client for Clojure
-=======
 Simple Riak client for Clojure based on new HTTP API format
->>>>>>> Initial import
 
 ## Usage
 

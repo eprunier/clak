@@ -1,5 +1,6 @@
 (ns clak.json
-  "This namespace contains JSON utilities"
+  "This namespace contains utilities used by Clak,
+   and can be used at your convenience."
   (:require [cheshire.core :as json]))
 
 (defn json->clj

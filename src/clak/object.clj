@@ -1,4 +1,5 @@
 (ns clak.object
+  "This namespace is used for key/value objects operations."
   (:require [clj-http.client :as http]
             [clak.core :as core]
             [clak.json :as json]))
