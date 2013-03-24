@@ -19,10 +19,14 @@
 
 (defn ping
   "Checks if the server is alive (should return \"OK\")."
-  []
-  (-> (str core/*riak-url* "/ping")
-      http/get
-      :body))
+  ([]
+     (-> (str core/*riak-url* "/ping")
+         http/get
+         :body))
+  ([url port]
+     (-> (str url ":" port "/ping")
+         http/get
+         :body)))
 
 (defn stats
   "Returns informations of the requested node as a clojure map."
@@ -32,4 +36,19 @@
       :body
       (json/json->clj)))
 
+(defn connected-nodes
+  "Returns nodes in the current ring."
+  []
+  (-> (stats)
+      (:connected_nodes)))
 
+(defn ring-members
+  []
+  (-> (stats)
+      (:ring_members)))
+
+(defn ring-ownership
+  []
+  (->> (stats)
+      (:ring_ownership)
+      (re-find #"\{'([\w\.]*)',([\d]+)\}")))

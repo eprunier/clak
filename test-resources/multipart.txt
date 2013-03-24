@@ -1,0 +1,38 @@
+--JZi8W8pB0Z3nO3odw11GUB4LQCN
+Content-Type: multipart/mixed; boundary=OjZ8Km9J5vbsmxtcn1p48J91cJP
+
+--OjZ8Km9J5vbsmxtcn1p48J91cJP
+X-Riak-Vclock: a85hYGDgymDKBVIszMk55zKYEhnzWBlKIniO8kGF2TyvHYIKf0c=
+Location: /riak/test/doc
+Content-Type: application/json
+Link: </riak/test>; rel="up", </riak/test/doc2>; riaktag="next"
+Etag: 3pvmY35coyWPxh8mh4uBQC
+Last-Modified: Wed, 10 Mar 2010 20:14:13 GMT
+
+{"riak":"CAP"}
+--OjZ8Km9J5vbsmxtcn1p48J91cJP
+X-Riak-Vclock: a85hYGDgymDKBVIszMk55zKYEhnzWBlKIniO8kGF2TyvHYIKf0c=
+Location: /riak/test/doc
+Content-Type: application/json
+Link: </riak/test>; rel="up", </riak/test/doc2>; riaktag="next"
+Etag: 3pvmY35coyWPxh8mh4uBQC
+Last-Modified: Wed, 10 Mar 2010 20:14:13 GMT
+
+{"riak":"CAP"}
+--OjZ8Km9J5vbsmxtcn1p48J91cJP--
+
+--JZi8W8pB0Z3nO3odw11GUB4LQCN
+Content-Type: multipart/mixed; boundary=RJKFlAs9PrdBNfd74HANycvbA8C
+
+--RJKFlAs9PrdBNfd74HANycvbA8C
+X-Riak-Vclock: a85hYGBgzGDKBVIsbLvm1WYwJTLmsTLcjeE5ypcFAA==
+Location: /riak/test/doc2
+Content-Type: application/json
+Link: </riak/test>; rel="up"
+Etag: 6dQBm9oYA1mxRSH0e96l5W
+Last-Modified: Wed, 10 Mar 2010 18:11:41 GMT
+
+{"foo":"bar"}
+--RJKFlAs9PrdBNfd74HANycvbA8C--
+
+--JZi8W8pB0Z3nO3odw11GUB4LQCN--
