@@ -36,19 +36,17 @@
       :body
       (json/json->clj)))
 
-(defn connected-nodes
+(defn ring-members
   "Returns nodes in the current ring."
   []
-  (-> (stats)
-      (:connected_nodes)))
-
-(defn ring-members
-  []
-  (-> (stats)
-      (:ring_members)))
+  (:ring_members (stats)))
 
 (defn ring-ownership
+  "Return the ring ownership."
   []
-  (->> (stats)
-      (:ring_ownership)
-      (re-find #"\{'([\w\.]*)',([\d]+)\}")))
+  (let [pattern #"\{'([\w\.@]*)',([\d]+)\}"
+        ownership (->> (stats)
+                       :ring_ownership)]
+    (reduce #(assoc % (second %2) (Integer/valueOf (last %2)))
+            {}
+            (re-seq pattern ownership))))
