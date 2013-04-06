@@ -22,7 +22,9 @@
 (defn- split-steps
   "Parses multipart data and returns a sequence of strings representing steps."
   [multipart]
-  (let [boundary (re-find #"^--[a-zA-Z0-9]*" multipart)]
+  (let [boundary (->> multipart
+                      (re-find #"\A\s*(--[a-zA-Z0-9]*)")
+                      second)]
     (-> multipart
         (str/split (re-pattern boundary))
         clean)))
@@ -50,7 +52,7 @@
   "Takes a string representing a result and returns a map containing :header and :body."
   [result]
   (let [result-items (-> result
-                         (str/split #"\n\n")
+                         (str/split #"(\r?\n){2}")
                          clean)
         headers (parse-headers (first result-items))
         body (second result-items)]
@@ -62,8 +64,8 @@
   [step]
   (let [results (split-results step)]
     (->> results
-        (map parse-result)
-        vector)))
+         (map parse-result)
+         vector)))
 
 (defn parse-multipart
   "Parses multipart walk result and returns a vector of steps."
