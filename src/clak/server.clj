@@ -13,9 +13,13 @@
 
 (defn connect!
   "Define the Riak URL and port used by each command."
-  [url port]
-  (alter-var-root (var core/*riak-url*)
-                  (constantly (str url ":" port))))
+  ([]
+     (connect! "http://localhost"))
+  ([url]
+     (connect! url 8098))
+  ([url port]
+     (alter-var-root (var core/*riak-url*)
+                     (constantly (str url ":" port)))))
 
 (defn ping
   "Checks if the server is alive (should return \"OK\")."
