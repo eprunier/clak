@@ -21,17 +21,10 @@
           metadata))
 
 (defn- ->headers
-  "Available option keys :
-     :content-type
-     :link
-     :indexes
-     :metadata"
-  [{:keys [content-type links indexes metadata]
-    :or {content-type "application/octet-stream"
-         links ""
-         indexes ""}
-    :as options}]
-  (let [headers {"Content-Type" content-type
+  [{:keys [data as links indexes metadata]
+    :or {as "application/json"}
+    :as content}]
+  (let [headers {"Content-Type" as
                  "Link" links
                  "Indexes" indexes}]
     (if metadata
@@ -50,13 +43,14 @@
 (defn store
   "Store data under the specified bucket and key.
 
-   Available options :
-     - :content-type
+   content keys :
+     - :data
+     - :as       (MIME Content-Type)
      - :links
-     - :indexes"
-  [bucket key data & [options]]
-  (let [headers (->headers options)]
-    (println headers)
+     - :indexes
+     - :metadata (not yet implemented)"
+  [bucket key {:keys [data] :as content}]
+  (let [headers (->headers content)]
     (http/put (core/key-url bucket key)
               {:headers headers
                :body data
@@ -67,19 +61,19 @@
   [bucket key]
   (http/delete (core/key-url bucket key)))
 
-(defn link
+(defn- create-link
   "Create the string that corresponds to a link."
   [bucket key tag]
   (str "</buckets/" (name bucket) "/keys/" (name key) ">; riaktag=\"" (name tag) "\""))
 
-(defn create-links
+(defn link-to
   "Create a string with multiple links.
    This string have to be included in the :link option
    when storing the associated object.
 
    Example :
-   (create-links
-      (link :bucket1 :key1 :tag1)
-      (link :bucket2 :key2 :tag2)"
+   (link-to
+      [:bucket1 :key1 :tag1]
+      [:bucket2 :key2 :tag2]"
   [& links]
-  (str/join ", " links))
+  (str/join ", " (map #(apply create-link %) links)))

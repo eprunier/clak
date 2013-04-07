@@ -1,17 +1,18 @@
 (object/store :person :bruce_willis
-       (json/clj->json {:firstName "Bruce"
-                        :lastName "Willis"})
-       {:content-type "application/json"
-        :links (object/create-links
-                (object/link :movie :die_hard_1 :movie)
-                (object/link :movie :clones :movie))})
+              {:data  (json/clj->json {:firstName "Bruce"
+                                       :lastName "Willis"})
+               :as "application/json"
+               :links (object/link-to
+                       [:movie :die_hard_1 :movie]
+                       [:movie :clones :movie])
+               :metadata {:foo "foo-value"
+                          :bar "bar-value"}})
 
 (object/store :person :alan_rickman
-       (json/clj->json {:firstName "Alan"
-                        :lastName "Rickman"})
-       {:content-type "application/json"
-        :links (object/create-links
-                (object/link :movie :die_hard_1 :movie))})
+              {:data (json/clj->json {:firstName "Alan"
+                                      :lastName "Rickman"})
+               :links (object/link-to
+                       [:movie :die_hard_1 :movie])})
 
 (object/store :person :alexander_godunov
        (json/clj->json {:firstName "Alexander"
