@@ -81,7 +81,7 @@
 (defn step
   "Defines a step for the link walking."
   [bucket tag keep]
-  (str/join "," [(name bucket) (name tag) keep]))
+  (str/join "," [(name bucket) (name tag) (if keep 1 0)]))
 
 (defn walk
   "Link walking.

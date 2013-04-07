@@ -1,4 +1,4 @@
-(defproject clak "1.0.0-SNAPSHOT"
+(defproject clak "0.1.0-SNAPSHOT"
   :description "Simple Riak client for Clojure based on new HTTP API format."
   :url "https://github.com/eprunier/clak"
   :license {:name "Eclipse Public License"
