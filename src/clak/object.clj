@@ -11,11 +11,11 @@
   (-> (core/key-url bucket key)
       http/get))
 
-(defn- parse-metadata
-  "Parse metadata and generate related headers map"
-  [metadata]
+(defn- map->headers
+  "Parse a clojure map and generate the related headers map"
+  [prefix metadata]
   (reduce #(assoc %
-             (str "X-Riak-Meta-" (name (key %2)))
+             (str prefix (name (key %2)))
              (val %2))
           {}
           metadata))
@@ -25,36 +25,33 @@
     :or {as "application/json"}
     :as content}]
   (let [headers {"Content-Type" as
-                 "Link" links
-                 "Indexes" indexes}]
-    (if metadata
-      (merge headers (parse-metadata metadata))
-      headers)))
-
-(defn store-without-key
-  "Store data under the specified bucket and returns a generated key."
-  [bucket data & [options]]
-  (let [headers (->headers options)]
-    (http/post (str (core/bucket-url bucket) "/keys")
-               {:headers headers
-                :body data
-                :decompress-body false})))
+                 "Link" links}
+        index-metadata (map->headers "X-Riak-Index-" indexes)
+        other-metadata (map->headers "X-Riak-Meta-" metadata)]
+    (merge headers index-metadata other-metadata)))
 
 (defn store
-  "Store data under the specified bucket and key.
+  "Store data under the specified bucket and the given key
+   (or a generated one if not provided).
 
    content keys :
      - :data
-     - :as       (MIME Content-Type)
-     - :links
-     - :indexes
-     - :metadata (not yet implemented)"
-  [bucket key {:keys [data] :as content}]
-  (let [headers (->headers content)]
-    (http/put (core/key-url bucket key)
-              {:headers headers
-               :body data
-               :decompress-body false})))
+     - :as       (Content-Type)
+     - :links    (produced by the link-to function)
+     - :indexes  (key/value map)
+     - :metadata (key/value map)"
+  ([bucket {:keys [data] :as content}]
+     (let [headers (->headers content)]
+       (http/post (str (core/bucket-url bucket) "/keys")
+                  {:headers headers
+                   :body data
+                   :decompress-body false})))
+  ([bucket key {:keys [data] :as content}]
+     (let [headers (->headers content)]
+       (http/put (core/key-url bucket key)
+                 {:headers headers
+                  :body data
+                  :decompress-body false}))))
 
 (defn delete
   "Delete an object from the specified bucket and key"

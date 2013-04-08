@@ -1,3 +1,7 @@
+(object/store :person
+              {:data (json/clj->json {:firstName "Foo"
+                                      :lastName "Bar"})})
+
 (object/store :person :bruce_willis
               {:data  (json/clj->json {:firstName "Bruce"
                                        :lastName "Willis"})
@@ -6,7 +10,9 @@
                        [:movie :die_hard_1 :movie]
                        [:movie :clones :movie])
                :metadata {:foo "foo-value"
-                          :bar "bar-value"}})
+                          :bar "bar-value"}
+               :indexes {:email_bin "bruce.willis@gmail.com"
+                         :name_bin "willis"}})
 
 (object/store :person :alan_rickman
               {:data (json/clj->json {:firstName "Alan"
@@ -35,11 +41,13 @@
         :links (object/create-links
                 (object/link :person :bruce_willis :actor)
                 (object/link :person :alan_rickman :actor)
-                (object/link :person :alexander_godunov :actor))})
+                (object/link :person :alexander_godunov :actor))
+        :indexes {:year_int 1988}})
 
 (object/store :movie :clones
        (json/clj->json {:name "Clones"
                         :year 2009})
        {:content-type "application/json"
         :links (object/create-links
-                (object/link :person :bruce_willis :actor))})
+                (object/link :person :bruce_willis :actor))
+        :indexes {:year_int "2009"}})

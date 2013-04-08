@@ -48,7 +48,7 @@
          (apply merge)
          w/keywordize-keys)))
 
-(defn parse-result
+(defn- parse-result
   "Takes a string representing a result and returns a map containing :header and :body."
   [result]
   (let [result-items (-> result
@@ -59,7 +59,7 @@
     {:header headers
      :body body}))
 
-(defn parse-step
+(defn- parse-step
   "Parses results for the specified step and returns a vector of maps representing results."
   [step]
   (let [results (split-results step)]
@@ -67,7 +67,7 @@
          (map parse-result)
          vector)))
 
-(defn parse-multipart
+(defn- parse-multipart
   "Parses multipart walk result and returns a vector of steps."
   [multipart]
   (let [steps (split-steps multipart)]
@@ -96,3 +96,20 @@
                       http/get
                       :body)]
     (parse-multipart multipart)))
+
+(defn- find-keys-by-index
+  [url]
+  (-> url
+      http/get
+      :body
+      json/json->clj
+      :keys))
+
+(defn find-by-index
+  "Find indexed keys by value or by range."
+  ([bucket index value]
+     (-> (str (core/bucket-url bucket) "/index/" (name index) "/" value)
+         find-keys-by-index))
+  ([bucket index range-start range-end]
+     (-> (str (core/bucket-url bucket) "/index/" (name index) "/" range-start "/" range-end)
+         find-keys-by-index)))
