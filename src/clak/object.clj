@@ -5,11 +5,21 @@
             [clak.core :as core]
             [clak.json :as json]))
 
+(defn- result-postprocessing
+  "Post-process query result."
+  [{headers :headers data :body :as result}]
+  (let [content-type (headers "content-type")]
+    (if (= "application/clojure" content-type)
+      (assoc result :body (json/json->clj data))
+      result)))
+
 (defn fetch
   "Reads an object from the specified bucket and key"
   [bucket key]
   (-> (core/key-url bucket key)
-      http/get))
+      http/get
+      result-postprocessing
+      :body))
 
 (defn- map->headers
   "Parse a clojure map and generate the related headers map"
@@ -22,13 +32,28 @@
 
 (defn- ->headers
   [{:keys [data as links indexes metadata]
-    :or {as "application/json"}
+    :or {as "application/clojure"}
     :as content}]
   (let [headers {"Content-Type" as
                  "Link" links}
         index-metadata (map->headers "X-Riak-Index-" indexes)
         other-metadata (map->headers "X-Riak-Meta-" metadata)]
     (merge headers index-metadata other-metadata)))
+
+(defn- data-preprocessing
+  "Pre-process data according to content-type defined in headers."
+  [headers data]
+  (let [content-type (headers "Content-Type")]
+    (if (= "application/clojure" content-type)
+      (json/clj->json data)
+      data)))
+
+(defn- send-store-request
+  "Send a HTTP store request based on the specified method (:put or :post)."
+  [method url data]
+  (condp = method
+    :put (http/put url data)
+    :post (http/post url data)))
 
 (defn store
   "Store data under the specified bucket and the given key
@@ -41,17 +66,19 @@
      - :indexes  (key/value map)
      - :metadata (key/value map)"
   ([bucket {:keys [data] :as content}]
-     (let [headers (->headers content)]
-       (http/post (str (core/bucket-url bucket) "/keys")
-                  {:headers headers
-                   :body data
-                   :decompress-body false})))
+     (store bucket nil content))
   ([bucket key {:keys [data] :as content}]
-     (let [headers (->headers content)]
-       (http/put (core/key-url bucket key)
-                 {:headers headers
-                  :body data
-                  :decompress-body false}))))
+     (let [headers (->headers content)
+           request-data {:headers headers
+                         :body (data-preprocessing headers data)
+                         :decompress-body false}]
+       (if (nil? key)
+         (send-store-request :post
+                             (str (core/bucket-url bucket) "/keys")
+                             request-data)
+         (send-store-request :put
+                             (core/key-url bucket key)
+                             request-data)))))
 
 (defn delete
   "Delete an object from the specified bucket and key"
