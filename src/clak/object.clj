@@ -25,7 +25,7 @@
   "Parse a clojure map and generate the related headers map"
   [prefix metadata]
   (reduce #(assoc %
-             (str prefix (name (key %2)))
+             (str (name prefix) (name (key %2)))
              (val %2))
           {}
           metadata))
@@ -36,8 +36,8 @@
     :as content}]
   (let [headers {"Content-Type" as
                  "Link" links}
-        index-metadata (map->headers "X-Riak-Index-" indexes)
-        other-metadata (map->headers "X-Riak-Meta-" metadata)]
+        index-metadata (map->headers "x-riak-index-" indexes)
+        other-metadata (map->headers "x-riak-meta-" metadata)]
     (merge headers index-metadata other-metadata)))
 
 (defn- data-preprocessing
