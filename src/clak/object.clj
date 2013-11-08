@@ -7,17 +7,20 @@
 
 (defn- result-postprocessing
   "Post-process query result."
-  [{headers :headers data :body :as result}]
-  (let [content-type (headers "content-type")]
-    (if (= "application/clojure" content-type)
-      (assoc result :body (json/json->clj data))
-      result)))
+  [{status :status headers :headers data :body :as result}]
+  (if (= 404 status)
+    {:headers headers 
+     :body nil}
+    (let [content-type (headers "content-type")]
+      (if (= "application/clojure" content-type)
+        (assoc result :body (json/json->clj data))
+        result))))
 
 (defn fetch
   "Reads an object from the specified bucket and key"
   [bucket key]
   (-> (core/key-url bucket key)
-      http/get
+      (http/get {:throw-exceptions false})
       result-postprocessing
       :body))
 
